@@ -1,0 +1,57 @@
+name: Auto8 Autonomous Reel Processor
+
+on:
+  schedule:
+    # Runs 2 times a day (at 06:00 UTC and 18:00 UTC)
+    - cron: '0 6,18 * * *'
+  workflow_dispatch: # Allows you to manually trigger via the "Run workflow" button
+
+concurrency:
+  group: auto8-pipeline
+  cancel-in-progress: false
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout Private Automation Codebase
+        uses: actions/checkout@v4
+        with:
+          repository: 'shivank-shiv/AUTOMATION-AUTO8'
+          token: ${{ secrets.PRIVATE_REPO_TOKEN }}
+          path: '.'
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install System Dependencies (FFmpeg)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Execute Autonomous Reaction Pipeline
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          APIFY_API: ${{ secrets.APIFY_API }}
+          MONGODB_URL: ${{ secrets.MONGODB_URL }}
+          GCS_API: ${{ secrets.GCS_API }}
+          DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          APP_ID: ${{ secrets.APP_ID }}
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+          IG_ID: ${{ secrets.IG_ID }}
+          IG_REFRESH_TOKEN: ${{ secrets.IG_REFRESH_TOKEN }}
+        run: |
+          python react.py
