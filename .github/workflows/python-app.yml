@@ -53,5 +53,9 @@ jobs:
           APP_SECRET: ${{ secrets.APP_SECRET }}
           IG_ID: ${{ secrets.IG_ID }}
           IG_REFRESH_TOKEN: ${{ secrets.IG_REFRESH_TOKEN }}
+          # ── Add these 3 lines below ──
+          GH_SECRET_UPDATE_TOKEN: ${{ secrets.GH_SECRET_UPDATE_TOKEN }}
+          INSTA_TOKEN_DOC_ID: ${{ secrets.INSTA_TOKEN_DOC_ID }}
+          PUBLIC_REPO_NAME: ${{ secrets.PUBLIC_REPO_NAME }}
         run: |
           python react.py
